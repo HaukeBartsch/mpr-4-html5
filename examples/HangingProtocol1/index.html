@@ -1,0 +1,107 @@
+<html>
+<head>
+
+  <script src='http://www.google.com/jsapi' type='text/javascript'></script>
+  <script type='text/javascript'>
+    google.load('jquery', '1.4.4');
+  </script>
+  <script type='text/javascript'>
+    google.load('jqueryui', '1.8.3');
+  </script>
+  <!-- Script from https://github.com/brandonaaron/jquery-mousewheel/downloads -->
+  <script type="text/javascript" src="../../external-js/jquery.mousewheel.min.js"></script>
+  <!-- We need these three components
+       <script type="text/javascript" src="../../external-js/pixastic/pixastic.core.js"></script> 
+       <script type="text/javascript" src="../../external-js/pixastic/pixastic.jquery.js"></script>
+       <script type="text/javascript" src="../../external-js/pixastic/actions/brightness.js"></script> 
+    -->
+  <!-- Or a custom version build from http://www.pixastic.com/lib/download/ -->
+  <script type="text/javascript" src="../../external-js/pixastic.custom.js"></script>
+  <!-- The MPR module itself -->
+  <script type="text/javascript" src="../../source/mpr.js"></script>
+
+  <style type="text/css" media="all">
+    body { 
+       background-color: #ffffff;
+       font: 13px Helvetica,arial,freesans,clean,sans-serif;
+       -webkit-font-smoothing: antialiased;
+    }
+  </style>
+
+</head>
+<body>
+
+<script type="text/javascript">
+
+  var mpr;
+
+  jQuery(document).ready(function() {
+      mpr1 = new mpr(0);
+      mpr1.setVoxelSize([1,1,1]);
+      mpr1.bindWindow("#window0", [0,0,1]); // bind windows first
+      mpr1.setFlipSliceDirections( [false, false, true] );
+      mpr1.setCacheSize( 5 ); // speed up display by caching 1 image only
+      mpr1.setPatientInformation( "Henry Hamster", "2012/02/02", "MPR", "none" );
+      mpr1.setDataPath('../data/MPR');
+
+      jQuery('.modalityData').change(function() { 
+          var value = jQuery('.modalityData').val();
+          mpr1.patientinformation.modality = value;
+          mpr1.setDataPath('../data/'+value);
+          mpr1.resetImage();
+      });
+      jQuery(window).resize(function() {
+        var tpar = jQuery('#container');
+        var t    = jQuery('#window0');
+        document.getElementById('window0').height = tpar.width();
+        document.getElementById('window0').width  = tpar.width();
+        mpr1.update();
+        jQuery('#control').css('left', tpar.width()-130);
+      });
+      jQuery(window).resize();
+
+  });
+
+</script>
+
+</head>
+
+  <div id="page" class="siteContent">
+
+    <div class="spacer"></div>
+
+    <div class="block" style="width: 100%; position: block;">
+       <div style="width: 40%; position: relative; float: left; max-width: 500px;">
+          <h2>Hanging protocol 1 <span style="font-size: 80%; color: gray;">A single window</span></h2>
+	  <ul>
+	    <it>
+	      zoom: use <button onclick="mpr1.setZoomFactor(mpr1.getZoomFactor()*1.05);">'+'</button> and 
+	      <button onclick="mpr1.setZoomFactor(mpr1.getZoomFactor()*0.95);">'-'</button> on your keyboard, 
+              <button onclick="mpr1.setZoomFactor(1.0);">'0'</button> to reset<br>
+	      pan: use Ctrl (or Meta)- mouse1 to move the image around<br>
+	      orientations: <button onclick="e=jQuery.Event('keypress'); e.keyCode = 104; jQuery('#window0').trigger(e);">'H'</button>, 
+              <button onclick="e=jQuery.Event('keypress'); e.keyCode = 114; jQuery('#window0').trigger(e);">'R'</button>, 
+              <button onclick="e=jQuery.Event('keypress'); e.keyCode = 99; jQuery('#window0').trigger(e);">'C'</button><br>
+              brightness/contrast: Shift - mouse-left/right, Shift - mouse-up/down<br>
+              change slice: mouse-wheel<br>
+	      disable overlay: <button onclick="e=jQuery.Event('keypress');e.keyCode = 32; jQuery('#window0').trigger(e);">space-bar</button>
+	    </it>
+	  </ul>
+       </div>
+       <div id="container" style="position: relative; float: right; width: 60%">
+	 <div id="control" style="position: absolute; left: 300px; z-index: 1;">
+	   <span style="color: #FFFFFF; font-weight: bold;">Data:</span> <select class="modalityData">
+             <option value="MPR">MPR</option>
+             <option value="RGB">RGB</option>
+             <option value="FA">FA</option>
+           </select>
+	 </div>
+	 
+         <canvas id="window0" width="100%" orientation="0,0,1" style="cursor:crosshair;"></canvas>
+       </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

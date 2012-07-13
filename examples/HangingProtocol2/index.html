@@ -1,0 +1,137 @@
+<html>
+<head>
+
+  <script src='http://www.google.com/jsapi' type='text/javascript'></script>
+  <script type='text/javascript'>
+    google.load('jquery', '1.4.4');
+  </script>
+  <script type='text/javascript'>
+    google.load('jqueryui', '1.8.3');
+  </script>
+  <!-- Script from https://github.com/brandonaaron/jquery-mousewheel/downloads -->
+  <script type="text/javascript" src="../../external-js/jquery.mousewheel.min.js"></script>
+  <!-- We need these three components
+       <script type="text/javascript" src="../../external-js/pixastic/pixastic.core.js"></script> 
+       <script type="text/javascript" src="../../external-js/pixastic/pixastic.jquery.js"></script>
+       <script type="text/javascript" src="../../external-js/pixastic/actions/brightness.js"></script> 
+    -->
+  <!-- Or a custom version build from http://www.pixastic.com/lib/download/ -->
+  <script type="text/javascript" src="../../external-js/pixastic.custom.js"></script>
+  <!-- The MPR module itself -->
+  <script type="text/javascript" src="../../source/mpr.js"></script>
+
+  <style type="text/css" media="all">
+    body { 
+       background-color: #363636;
+       color: #FFFFFF;
+       font-color: #FFFFFF;
+       font: 13px Helvetica,arial,freesans,clean,sans-serif;
+       -webkit-font-smoothing: antialiased;
+    }
+  </style>
+
+</head>
+<body>
+
+<script type="text/javascript">
+
+  jQuery(document).ready(function() {
+      // each canvas shows one view on the data and is linked against one 'mpr' object
+      mpr1 = new mpr(0);
+      mpr1.setVoxelSize([1,1,1]);
+      mpr1.setFlipSliceDirections( [false, false, true] );
+      mpr1.bindWindow("#window0", [0,0,1]);
+      mpr1.bindWindow("#window1", [0,1,0]); // make sure that cross-hair is syncronized
+      mpr1.bindWindow("#window2", [1,0,0]); // make sure that cross-hair is syncronized
+      mpr1.setCacheSize( 5 ); // speed up display by caching 1 image only
+      mpr1.setPatientInformation( "Henry Hamster", "2012/02/02", "MPR", "none" );
+      mpr1.setDataPath('../data/MPR');
+
+      mpr2 = new mpr(1);
+      mpr2.setVoxelSize([1,1,1]);
+      mpr2.setFlipSliceDirections( [false, false, true] );
+      mpr2.setCacheSize( 5 ); // speed up display by caching 1 image only
+      mpr2.setPatientInformation( "Henry Hamster", "2012/02/02", "MPR", "none" );
+      mpr2.setDataPath('../data/MPR');
+
+      mpr3 = new mpr(2);
+      mpr3.setVoxelSize([1,1,1]);
+      mpr3.setFlipSliceDirections( [false, false, true] );
+      mpr3.setCacheSize( 5 ); // speed up display by caching 1 image only
+      mpr3.setPatientInformation( "Henry Hamster", "2012/02/02", "MPR", "none" );
+      mpr3.setDataPath('../data/MPR');
+
+      jQuery('.modalityData').change(function() { 
+          var value = jQuery('.modalityData').val();
+          mpr1.patientinformation.modality = value;
+          mpr1.setDataPath('../data/'+value);
+          mpr1.resetImage();
+      });
+      jQuery(window).resize(function() { // adjust the size of the div elements according to the size of the window
+        var tpar = jQuery('#container');
+        var t    = jQuery('#window0');
+        var t2   = jQuery('#window1');
+        var t3   = jQuery('#window2');
+        var p = 0.667;
+        document.getElementById('window0').height = tpar.width()*p;
+        document.getElementById('window0').width  = tpar.width()*p;
+        document.getElementById('window1').height = tpar.width()*(1-p);
+        document.getElementById('window1').width  = tpar.width()*(1-p);
+        document.getElementById('window2').height = tpar.width()*(1-p);
+        document.getElementById('window2').width  = tpar.width()*(1-p);
+        mpr1.update();
+        mpr2.update();
+        mpr3.update();
+        jQuery('#control').css('left', tpar.width()*p-100);
+      });
+      jQuery(window).resize();
+
+  });
+
+</script>
+
+</head>
+
+  <div id="page" class="siteContent">
+
+    <div class="block" style="width: 100%; position: block;">
+       <div style="width: 40%; position: relative; float: left; max-width: 500px;">
+          <h2>Hanging protocol 2 <span style="font-size: 80%; color: lightgray;">multi-planar reconstruction</span></h2>
+	  <ul>
+	    <it>
+	      zoom: use <button onclick="mpr1.setZoomFactor(mpr1.getZoomFactor()*1.05);">'+'</button> and 
+	      <button onclick="mpr1.setZoomFactor(mpr1.getZoomFactor()*0.95);">'-'</button> on your keyboard, 
+              use <button onclick="mpr1.setZoomFactor(1.0);">'0'</button><br>
+	      pan: use Ctrl (or Meta)- mouse1 to move the image around<br>
+	      orientations: <button onclick="e=jQuery.Event('keypress'); e.keyCode = 104; jQuery('#window0').trigger(e);">'H'</button>, 
+              <button onclick="e=jQuery.Event('keypress'); e.keyCode = 114; jQuery('#window0').trigger(e);">'R'</button>, 
+              <button onclick="e=jQuery.Event('keypress'); e.keyCode = 99; jQuery('#window0').trigger(e);">'C'</button><br>
+              brightness/contrast: Shift - mouse-left/right, Shift - mouse-up/down<br>
+              change slice: mouse-wheel
+	    </it>
+	  </ul>
+       </div>
+       <div id="container" style="position: relative; float: right; width: 60%">
+	 <div id="control" style="position: absolute; left: 300px; z-index: 1;">
+	   <span style="color: #FFFFFF; font-weight: bold;">Data:</span> <select class="modalityData">
+             <option value="MPR">MPR</option>
+             <option value="RGB">RGB</option>
+             <option value="FA">FA</option>
+           </select>
+	 </div>
+	 <div>
+  	   <div style="position: relative; float: left;">
+             <canvas id="window0" width="50%" orientation="0,0,1" style="cursor:crosshair;"></canvas>
+           </div>
+           <div style="position: relative; float: right;">
+               <canvas id="window1" width="50%" orientation="0,1,0" style="cursor:crosshair;"></canvas><br>
+               <canvas id="window2" width="50%" orientation="1,0,0" style="cursor:crosshair;"></canvas>
+           </div>
+         </div>
+       </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
