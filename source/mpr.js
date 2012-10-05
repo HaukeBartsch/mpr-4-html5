@@ -703,7 +703,8 @@ mpr.prototype.update = function() {
                  locCrossHairY - locCrossHairY*this.zoomFactor + transy);
        can.scale(this.zoomFactor, this.zoomFactor);
        var img = this.imageSet010[pos];
-       can.drawImage(img,0,0,img.width,img.height,0,0,can.canvas.width,can.canvas.height);
+       if (img != undefined && img.width > 0 && img.height > 0 && can.canvas.width > 0 && can.canvas.height > 0)
+         can.drawImage(img,0,0,img.width,img.height,0,0,can.canvas.width,can.canvas.height);
        if (this.overlayDataIsSet && this.alpha > 0 && typeof this.overlayImageSet010[pos] != "undefined") {
           var alphaBefore = can.globalAlpha;
           can.globalAlpha = this.alpha;
@@ -718,7 +719,8 @@ mpr.prototype.update = function() {
                  locCrossHairY - locCrossHairY*this.zoomFactor + transy);
        can.scale(this.zoomFactor, this.zoomFactor);
        var img = this.imageSet100[pos];
-       can.drawImage(img,0,0,img.width,img.height,0,0,can.canvas.width,can.canvas.height);
+       if (img != undefined && img.width > 0 && img.height > 0 && can.canvas.width > 0 && can.canvas.height > 0)
+         can.drawImage(img,0,0,img.width,img.height,0,0,can.canvas.width,can.canvas.height);
        if (this.overlayDataIsSet && this.alpha > 0 && typeof this.overlayImageSet100[pos] != "undefined") {
           var alphaBefore = can.globalAlpha;
           can.globalAlpha = this.alpha;
