@@ -634,7 +634,7 @@ mpr.prototype.update = function() {
      var locCrossHairX = 0; // location of the crosshair in this image
      var locCrossHairY = 0;
      var normalID = jQuery(id).attr('id');
-     canvas = document.getElementById(normalID);
+     var canvas = document.getElementById(normalID);
      if (d1 > d2 && d1 > d3) {
         pos = this.position[0];
         imset = 0;
@@ -653,7 +653,7 @@ mpr.prototype.update = function() {
      } else {
         pos = this.position[2];
      }
-     can = canvas.getContext('2d');
+     var can = canvas.getContext('2d');
      //can.fillStyle = "rgba(0,0,0,1)";
      //can.fillRect(0, 0, can.canvas.width, can.canvas.height);
 
