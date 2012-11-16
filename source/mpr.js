@@ -59,6 +59,8 @@ if (!document.createElement('mpr').getContext) {
     this.translate = [0,0,0,0,0,0];
     this.startTranslate = [0,0,0,0,0,0];
     this.lastCrossHairLocationImageSpace = [0,0,0,0,0,0];
+    this.scoutLineColor = "rgb(255,255,0)"; // color of the scout line
+    this.enableScoutLines = true; // draw a long line for the slice that is locked
   }
 
   // query the id
@@ -635,12 +637,18 @@ mpr.prototype.update = function() {
      var locCrossHairY = 0;
      var normalID = jQuery(id).attr('id');
      var canvas = document.getElementById(normalID);
+     var scoutline1 = false;
+     var scoutline2 = false;
      if (d1 > d2 && d1 > d3) {
+	if (this.enableScoutLines && this.getLockPosition()[2])
+  	  scoutline1 = true;
         pos = this.position[0];
         imset = 0;
         locCrossHairX = this.position[1]  /(this.getDims()[1]-1)*canvas.width;
         locCrossHairY = this.position[2]  /(this.getDims()[2]-1)*canvas.height;
      } else if (d2 > d1 && d2 > d3) {
+	if (this.enableScoutLines && this.getLockPosition()[2])
+  	  scoutline2 = true;
         pos = this.position[1];
         imset = 1;
         locCrossHairX = this.position[2]        /(this.getDims()[2]-1)*canvas.width;
@@ -776,27 +784,43 @@ mpr.prototype.update = function() {
      //
      if (this.crosshairEnabled) {
     can.fillStyle = "rgba(160,160,20,0.4)";
-        can.strokeStyle = "rgb(255,255,0)";
-        
+    can.strokeStyle = "rgb(255,255,0)";
+
     can.beginPath();
+	var w = aWidth;
+	if (scoutline1) {
+	  can.strokeStyle = this.scoutLineColor;
+	  w = aWidth*50;
+        } else {
+          can.strokeStyle = "rgb(255,255,0)";
+	}
         can.moveTo(aX-aWidth/2, aY);
-        can.lineTo(aX-aWidth/2-20, aY);
+        can.lineTo(aX-w/2-20, aY);
         can.stroke();
 
         can.moveTo(aX+aWidth/2, aY);
-        can.lineTo(aX+aWidth/2+20, aY);
+        can.lineTo(aX+w/2+20, aY);
         can.stroke();
-
+    can.closePath();
+    can.beginPath();
+        var h = aHeight;
+	if (scoutline2) {
+ 	  can.strokeStyle = this.scoutLineColor;
+	  h = aHeight*50;
+        } else {
+	  can.strokeStyle = "rgb(255,255,0)";
+        }
+ 
         can.moveTo(aX, aY-aHeight/2);
-        can.lineTo(aX, aY-aHeight/2-20);
+        can.lineTo(aX, aY-h/2-20);
         can.stroke();
 
         can.moveTo(aX, aY+aHeight/2);
-        can.lineTo(aX, aY+aHeight/2+20);
+        can.lineTo(aX, aY+h/2+20);
         can.stroke();
         can.closePath();
-
      }
+
      if (this.infoOverlayEnabled) {
        //can.shadowBlur = 0;
 
