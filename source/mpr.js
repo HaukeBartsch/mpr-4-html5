@@ -449,6 +449,7 @@ if (typeof jQuery(id).mousewheel == 'function') {
              if (context.overlayDataIsSet)
                new importImages( context.overlayDataPath, context.updateDataStore, context, context.position, false );
 	 }
+         update(); // sometimes images don't update, maybe a timing issue
      })(this));
    }
    jQuery(id).keydown((function(context) {
