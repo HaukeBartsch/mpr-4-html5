@@ -446,10 +446,10 @@ if (typeof jQuery(id).mousewheel == 'function') {
                context.position[i] = context.getDims()[i]-1;
              }
              new importImages( context.dataPath, context.updateDataStore, context, context.position, true );
-             if (context.overlayDataIsSet)
+             if (context.overlayDataIsSet === true)
                new importImages( context.overlayDataPath, context.updateDataStore, context, context.position, false );
+             context.update(); // sometimes images don't update, maybe a timing issue
 	 }
-         update(); // sometimes images don't update, maybe a timing issue
      })(this));
    }
    jQuery(id).keydown((function(context) {
